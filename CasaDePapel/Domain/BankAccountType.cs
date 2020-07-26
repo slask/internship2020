@@ -1,4 +1,4 @@
-namespace CasaDePapel.Controllers
+namespace CasaDePapel.Domain
 {
     public enum BankAccountType
     {

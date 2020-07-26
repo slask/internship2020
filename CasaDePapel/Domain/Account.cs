@@ -1,7 +1,31 @@
-namespace CasaDePapel.Controllers
+
+using System;
+
+namespace CasaDePapel.Domain
 {
     public class Account
     {
-        private bool IsAcive { get; set; }
+        public int Id { get; set; }
+        public bool IsActive { get; set; }
+        public virtual User Owner { get; set; }
+        
+        public int OwnerId { get; set; }
+        public string Iban { get; set; }
+        public BankAccountType AccountType { get; set; }
+        public decimal Balance { get; set; }
+        public string Currency { get; set; }
+
+        public void Deposit(decimal amount)
+        {
+            if (amount <= 0)
+            {
+                throw new InvalidOperationException("Amount must be > 0");
+            }
+
+            Balance += amount;
+        }
+        
+        
+        
     }
 }

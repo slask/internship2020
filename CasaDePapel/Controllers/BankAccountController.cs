@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 using CasaDePapel.Application;
 using CasaDePapel.Controllers.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace CasaDePapel.Controllers
 {
@@ -36,6 +31,20 @@ namespace CasaDePapel.Controllers
         }
         
         [HttpPost]
+        [Route("withdraw")]
+        public IActionResult WithdrawAmount(WithdrawAmountModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _bankAccountApplicationService.Withdraw(model);
+
+            return Ok();
+        }
+        
+        [HttpPost]
         [Route("transfer")]
         public IActionResult TransferMoney(TransferMoneyModel model)
         {
@@ -53,9 +62,13 @@ namespace CasaDePapel.Controllers
         [Route("list")]
         public IActionResult GetActiveBankAccountsList(int userId)
         {
-       
-
-            return Ok(new List<BankAccountOutputModel>());
+            if (userId <= 0)
+            {
+                throw new ArgumentException($"{nameof(userId)} is not valid");
+            }
+            
+            var accounts = _bankAccountApplicationService.ListActiveBankAccounts(userId);
+            return Ok(accounts);
         }
         
         [HttpPost]
@@ -63,7 +76,6 @@ namespace CasaDePapel.Controllers
         public IActionResult CurrencyExchange(ExchangeModel model)
         {
             var result = _bankAccountApplicationService.Exchange(model);
-
             return Ok(result);
         }
     }
