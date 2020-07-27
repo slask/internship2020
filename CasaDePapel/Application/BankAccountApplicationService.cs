@@ -7,6 +7,9 @@ using CasaDePapel.DataAccess;
 using CasaDePapel.Domain;
 using CasaDePapel.Infrastructure;
 using CasaDePapel.Models;
+using Dapper;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace CasaDePapel.Application
 {
@@ -15,9 +18,11 @@ namespace CasaDePapel.Application
         private readonly BankContext _db;
         private readonly NotificationService _notificationService;
         private readonly CurrencyRateService _currencyRateService;
+        private readonly IConfiguration _configuration;
 
-        public BankAccountApplicationService(BankContext db, NotificationService notificationService, CurrencyRateService currencyRateService)
+        public BankAccountApplicationService(BankContext db, NotificationService notificationService, CurrencyRateService currencyRateService, IConfiguration configuration)
         {
+            _configuration = configuration;
             _currencyRateService = currencyRateService;
             _notificationService = notificationService;
             _db = db;
@@ -160,12 +165,21 @@ namespace CasaDePapel.Application
             return allActive;
         }
 
-        public decimal AdminGetBankTotalWorth(int userId)
+        public decimal AdminGetBankTotalWorth()
         {
             //TODO: - showcase how to make the untestable testable and mock deps
+
             // get all accounts with dapper for perf
+            List<Account> allAccounts;
+            using (SqlConnection connection = new SqlConnection(
+                _configuration.GetConnectionString("BankContext")))
+            {
+                connection.Open();
+                allAccounts = connection.Query<Account>("SELECT * FROM [Accounts]").ToList();
+            }
+
             // sum all ammounts and return
-            return 0m;
+            return allAccounts.Sum(a => a.Balance);
         }
     }
 }
