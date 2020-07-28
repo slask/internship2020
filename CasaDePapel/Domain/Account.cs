@@ -17,14 +17,25 @@ namespace CasaDePapel.Domain
 
         public void Deposit(decimal amount)
         {
-            if (amount <= 0)
+            if (amount < 0)
             {
-                throw new InvalidOperationException("Amount must be > 0");
+                throw new InvalidOperationException("Amount must be >= 0");
             }
 
             Balance += amount;
         }
         
+        public void Withdraw(decimal amount)
+        {
+            if (Balance >= amount)
+            {
+                Balance -= amount;
+            }
+            else
+            {
+                throw new InvalidOperationException("Insufficient funds!");
+            }
+        }
         
         
     }

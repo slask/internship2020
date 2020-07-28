@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using CasaDePapel.Application;
 using CasaDePapel.DataAccess;
+using CasaDePapel.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +24,14 @@ namespace CasaDePapel
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<CurrencyRateService>();
+            services.AddScoped<BankAccountApplicationService>();
+            SetupDb(services);
+        }
+
+        protected virtual void SetupDb(IServiceCollection services)
+        {
             services.AddDbContext<BankContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BankContext")));
         }

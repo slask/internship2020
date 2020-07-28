@@ -3,7 +3,12 @@ using System.Net.Http;
 
 namespace CasaDePapel.Infrastructure
 {
-    public class NotificationService
+    public interface INotificationService
+    {
+        void MoneyWithdrawn(string iban, decimal moneyLeft);
+    }
+
+    public class NotificationService : INotificationService
     {
         public NotificationService()
         {
